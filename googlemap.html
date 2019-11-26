@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+            /* Always set the map height explicitly to define the size of the div
+             * element that contains the map. */
+            #map {
+              height: 100%;
+              margin: 20px auto;
+            }
+            /* Optional: Makes the sample page fill the window. */
+            html, body {
+              height: 100%;
+              margin: 0;
+              padding: 0;
+            }
+            .user_inputs{
+                margin: 10px auto;
+                width: 600px;
+            }
+
+            #address{
+                width: 500px;
+            }
+    </style>
+</head>
+<body  onload="initMap()">
+        <div id="map" style="width: 600px; height: 480px;"></div>
+        <div class="user_inputs">
+          <input id="address" type="textbox" value="Sydney, NSW">
+          <input type="button" value="Encode" onclick="codeAddress()">
+        </div>
+    <script>
+        const divDisplay = document.getElementById('map');
+        var map;
+        var geocoder;
+        function initMap() {
+            geocoder = new google.maps.Geocoder();
+            var latlng = new google.maps.LatLng(-34.397, 150.644);
+            var mapOptions = {
+            zoom: 10,
+            center: latlng
+            }
+            map = new google.maps.Map(divDisplay, mapOptions);
+        }
+
+        function codeAddress() {
+            var address = document.getElementById('address').value;
+            geocoder.geocode( { 'address': address}, function(results, status) {
+            if (status == 'OK') {
+                map.setCenter(results[0].geometry.location);
+                var marker = new google.maps.Marker({
+                    map: map,
+                    position: results[0].geometry.location
+                });
+            } else {
+                alert('Geocode was not successful for the following reason: ' + status);
+            }
+            });
+        }
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB8joVhGsoe8lBO5_Jdb9wrCA3a55TY8uQ&callback=initMap"
+    async defer></script>
+</body>
+<script>
+    const api_key = "AIzaSyB8joVhGsoe8lBO5_Jdb9wrCA3a55TY8uQ";
+    const api_key2 = "AIzaSyBaWQGzBzenwvrbe5rBP3emR7BGaTJwwQU";
+</script>
+</html>

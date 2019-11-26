@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Pokemon</title>
+    <style>
+        .monster{
+            margin: 10px auto;
+            padding: 10px 10px;
+            border: 0.5px dotted grey;
+            width: 600px;
+        }
+        
+    </style>
+</head>
+<body>
+    <div class="display"></div>
+</body>
+<script>
+    const display = document.querySelector(".display");
+
+    class Monster{
+        constructor(name, height, abilities, moves, image){
+            this._name = name;
+            this._height = height;
+            this._abilities = abilities;
+            this._moves = moves;
+            this._image = image;
+        }
+
+        get name(){ return this._name; }
+        set name(name){ this._name = name; }
+
+        get height(){ return this._height; }
+        set height(height){ this._height = height; }
+
+        get abilities(){ return this._abilities; }
+        set abilities(abilities){ this._abilities = abilities; }
+
+        get moves(){ return this._moves; }
+        set moves(moves){ this._moves = moves; }
+
+        get image(){ return this._image; }
+        set image(image){ this._image = image; }
+
+    }
+
+    function showMonsters(monsters){
+        let h1Tag = document.createElement("h1");
+        h1Tag.innerHTML = "Pokemon Complete Monster List";
+        h1Tag.classList.add("monster");
+        display.appendChild(h1Tag);
+        for(let monster of monsters){
+            let monDiv = document.createElement("div");
+            monDiv.classList.add("monster");
+            monDiv.innerHTML += `<h2>${monster.name}</h2>`;
+            monDiv.innerHTML += `<img src='${monster.image}'/>`;
+            monDiv.innerHTML += `<strong>Height:</strong> ${monster.height}<br/>`;
+            monDiv.innerHTML += `<strong>Moves:</strong><br/>`;
+            for(let move of monster.moves){
+                monDiv.innerHTML += ` ${move} |`;
+            }
+            monDiv.innerHTML += `<br/><strong>Abilities:</strong><br/>`;
+            for(let ability of monster.abilities){
+                monDiv.innerHTML += `${ability} `;
+            }
+            
+            display.appendChild(monDiv);
+        }
+        
+    }
+    fetch("https://pokeapi.co/api/v2/pokemon/").then(function(response){
+        // console.log(response);
+        if(!response.ok){
+            throw Error(response.statusText);
+        }
+        
+        const monsters = [];
+        response.json().then(function(data){
+            const responses = [];
+            for(let mon of data.results){
+                // console.log(mon);
+                const detail = fetch(mon["url"]);
+                responses.push(detail)
+            }
+
+            Promise.all(responses).then((arrayOfResponses)=>{
+                arrayOfResponses.forEach((response)=>{
+                    response.json().then((data)=>{
+
+                        let name = data["name"];
+                        let height = data["height"];
+                        
+                        let abilities = data["abilities"].map((x)=>{
+                            return x["ability"]["name"];
+                        });
+                        
+                        let moves = data["moves"].map((x)=>{
+                            return x["move"]["name"];
+                        });
+
+                        let image = data["sprites"].front_default;
+
+                        monsters.push(new Monster(name, height, abilities, moves, image));
+                        // monsterDetails.push(data);
+                    });
+                });
+                
+            }).then(()=>{
+                showMonsters(monsters);
+            });; 
+        });
+
+        // display.appendChild(h1Tag);
+        // display.appendChild(monList);
+    });
+</script>
+</html>

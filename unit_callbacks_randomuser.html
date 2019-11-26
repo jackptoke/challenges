@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <title>Callbacks & JSON</title>
+  </head>
+  <body>
+    <label class="display">No user yet</label>
+    <button class="btnClick">Click</button>
+    <script>
+
+      const paragraph = document.querySelector('.display');
+      const btnClick = document.querySelector('.btnClick');
+      getRandomUser = () => {
+        // This function uses AJAX to hit the random user API.
+        // More info: https://randomuser.me
+
+        var request = new XMLHttpRequest();
+        request.open("GET", "https://randomuser.me/api/?inc=name", true);
+        request.onload = function() {
+          /* You'll start here */
+          let response = request["response"];
+          let user = parseUser(response);
+          let name = user["results"][0]["name"]   
+          
+          paragraph.textContent = name["title"] + " " + name["first"] + " " +  name["last"];
+        };
+
+        request.send();
+      };
+
+      function parseUser(json_data){
+        let result = JSON.parse(json_data);
+        return result;
+      };
+      btnClick.addEventListener("click", getRandomUser)
+
+    </script>
+  </body>
+</html>
